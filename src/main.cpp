@@ -1,3 +1,4 @@
+/* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab nolist : */
 // Copyright (c) 2015, Elmo Trolla
 // LICENSE: https://opensource.org/licenses/ISC
 

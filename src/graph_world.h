@@ -1,4 +1,4 @@
-/* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab : */
+/* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab nolist : */
 #ifndef __GRAPH_WORLD_H__
 #define __GRAPH_WORLD_H__
 
