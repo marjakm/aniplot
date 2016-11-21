@@ -17,6 +17,10 @@ else
         $(pkg-config sdl2 --cflags) \
         -std=gnu++11 \
         src/main.cpp \
+        src/imgui_textwrap.cpp \
+        src/graph_widget.cpp \
+        src/graph_world.cpp \
+        src/udp_listener.cpp \
         ./lib/imgui/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.cpp \
         ./lib/imgui/imgui.cpp \
         ./lib/imgui/imgui_demo.cpp \
