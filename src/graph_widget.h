@@ -3,6 +3,7 @@
 #define __GRAPH_WIDGET_H__
 
 #include "graph_core.h"
+#include "imgui_textwrap.h"
 
 // Can contain many graphs (Graph objects).
 // Handles user interaction (mouse dragging, keyboard movement)

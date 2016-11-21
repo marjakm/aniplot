@@ -18,6 +18,8 @@
 #include "graph_core.h"
 #include "graph_world.h"
 
+#include <GL/gl3w.h>
+
 
 using namespace std;
 

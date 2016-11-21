@@ -2,40 +2,32 @@
 #ifndef __GRAPH_CORE_H__
 #define __GRAPH_CORE_H__
 
-#include <string>
-#include <vector>
-#include <memory>
-
-#include <GL/gl3w.h>
-
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include <imgui.h>
-#include "imgui_impl_sdl_gl3.h"
-#include "imgui_internal.h" // for custom graph renderer
-
-#include <SDL.h>
-
-#include "mip_buf_t.h"
-#include "imgui_textwrap.h"
-//#include "memfile.h"
-
-#include "im_vec_2d.h"
-#include "portal_rect.h"
-
 #undef min
 #undef max
-
+#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+#define EPSILON 0.0000001f
+
+#include <SDL.h>
 
 #define LOG_IMVEC2(vec) SDL_Log(#vec" %.5f %.5f\n", vec.x, vec.y)
 #define LOG_IMRECT(rc)  SDL_Log(#rc" min %.5f %.5f max %.5f %.5f\n", rc.Min.x, rc.Min.y, rc.Max.x, rc.Max.y)
 #define LOG_PORTAL(rc)  SDL_Log(#rc" min %.5f %.5f max %.5f %.5f\n", rc.min.x, rc.min.y, rc.max.x, rc.max.y)
 #define LOG_AACS(cs)    SDL_Log(#cs" pos %.5f %.5f axis %.5f %.5f\n", cs.pos.x, cs.pos.y, cs.xyaxis.x, cs.xyaxis.y)
 
-#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
-#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+#include <string>
+#include <vector>
+#include <memory>
 
-#define EPSILON 0.0000001f
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui.h>
+#include "imgui_impl_sdl_gl3.h"
+#include "imgui_internal.h" // for custom graph renderer
+
+#include "imvec2d_portalrect.h"
+#include "mip_buf_t.h"
+//#include "memfile.h"
 
 
 enum GraphVisualFlags_ {
