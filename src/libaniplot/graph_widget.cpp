@@ -205,7 +205,7 @@ void GraphWidget::_render_grid_horlines(const PortalRect& screen_value_portal, G
 	double pixel_y_begin   = screen_value_portal.proj_vout(ImVec2(0., volt_begin)).y;
 	double pixels_per_volt = screen_value_portal.proj_vout(ImVec2(0., 1.)).y - screen_value_portal.proj_vout(ImVec2(0., 0.)).y;
 	double pixel_y_step    = pixels_per_volt * volt_step;
-	//SDL_Log("num_gridlines %d pixels_per_volt %.5f pixel_y_begin %.5f pixel_y_step %.5f\n", num_gridlines, pixels_per_volt, pixel_y_begin, pixel_y_step);
+	//ANIPLOT_Log("num_gridlines %d pixels_per_volt %.5f pixel_y_begin %.5f pixel_y_step %.5f\n", num_gridlines, pixels_per_volt, pixel_y_begin, pixel_y_step);
 
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 	double y = pixel_y_begin;

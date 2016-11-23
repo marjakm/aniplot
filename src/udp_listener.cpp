@@ -1,11 +1,10 @@
 /* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab nolist : */
 
-using namespace std;
-
 #define P_CHANNEL_SAMPLES 10
 #define P_CHANNEL_INFO 11
 
 #include "udp_listener.h"
+#include <SDL.h> // SLD_Log
 
 
 UdpListener::UdpListener() {

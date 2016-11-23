@@ -19,7 +19,9 @@
 #include "graph_core.h"
 #include "graph_world.h"
 
+#include <SDL.h>
 #include <GL/gl3w.h>
+#include "imgui_impl_sdl_gl3.h"
 
 
 using namespace std;
