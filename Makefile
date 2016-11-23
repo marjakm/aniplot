@@ -3,6 +3,7 @@
 
 GL3W_DIR=./lib/gl3w
 IMGUI_DIR=./lib/cimgui/imgui
+CIMGUI_DIR=./lib/cimgui/cimgui
 
 BUILD_DIR=./build
 DIST_DIR=./dist
@@ -15,7 +16,20 @@ ANLIB_SRCS=$(ANLIB_DIR)/imgui_textwrap.cpp \
 		   $(ANLIB_DIR)/graph_world.cpp
 ANLIB_OBJS=$(ANLIB_SRCS:$(ANLIB_DIR)%.cpp=$(BUILD_DIR)%.o)
 
+COM_INC=-I/usr/local/include/ \
+		-I/usr/local/include/SDL2/ \
+		-I$(GL3W_DIR) \
+		-I$(IMGUI_DIR)/examples/sdl_opengl3_example \
+		-lSDL2 \
+		-lSDL2main \
+		-framework OpenGL \
+		-framework CoreFoundation \
+
 BIN=$(DIST_DIR)/aniplot
+BIN_INC=$(COM_INC) \
+		-I$(IMGUI_DIR) \
+		-I$(ANLIB_DIR) \
+		-lstdc++
 BIN_SRCS=src/main.cpp \
 		 src/udp_listener.cpp \
 		 $(IMGUI_DIR)/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.cpp \
@@ -23,29 +37,6 @@ BIN_SRCS=src/main.cpp \
 		 $(IMGUI_DIR)/imgui_demo.cpp \
 		 $(IMGUI_DIR)/imgui_draw.cpp \
 		 $(GL3W_DIR)/GL/gl3w.c
-BIN_INC=-I/usr/local/include/ \
-		-I/usr/local/include/SDL2/ \
-		-I$(GL3W_DIR) \
-		-I$(IMGUI_DIR) \
-		-I$(IMGUI_DIR)/examples/sdl_opengl3_example \
-		-I$(ANLIB_DIR) \
-		-lSDL2 \
-		-lSDL2main \
-		-framework OpenGL \
-		-framework CoreFoundation \
-		-lstdc++
-
-CBIN=$(DIST_DIR)/caniplot
-CBIN_SRCS=src/main.c \
-		  $(GL3W_DIR)/GL/gl3w.c
-CBIN_INC=-I/usr/local/include/ \
-		 -I/usr/local/include/SDL2/ \
-		 -I$(GL3W_DIR) \
-		 -lSDL2 \
-		 -lSDL2main \
-		 -framework OpenGL \
-		 -framework CoreFoundation \
-
 
 default: bin
 
@@ -54,15 +45,10 @@ print-%:
 
 clean:
 	rm -rf $(DIRS)
+	make -i -C $(CIMGUI_DIR) clean
 
 $(DIRS):
 	mkdir $@
-
-cbin: clean $(DIRS)
-	cc -O2 \
-		$(CBIN_INC) \
-		$(CBIN_SRCS) \
-		-o $(CBIN)
 
 bin: clean $(DIRS)
 	g++ -O2 \
@@ -83,3 +69,32 @@ lib: clean $(DIRS) $(ANLIB_OBJS)
 
 $(BUILD_DIR)/%.o: $(ANLIB_DIR)/%.cpp
 	g++ -O2 -c -I$(IMGUI_DIR) -o $@ $<
+
+
+
+CBIN=$(DIST_DIR)/caniplot
+IMGUI_SDL2_GL3_OBJ=$(BUILD_DIR)/imgui_impl_sdl_gl3.o
+CIMGUI_SDL2_GL3_OBJ=$(BUILD_DIR)/cimgui_impl_sdl_gl3.o
+CIMGUI_DYLIB=$(DIST_DIR)/cimgui.dylib
+
+cbin: clean $(DIRS) $(IMGUI_SDL2_GL3_OBJ) $(CIMGUI_SDL2_GL3_OBJ) $(CIMGUI_DYLIB)
+	cc -O2 \
+		$(COM_INC) \
+		-L$(DIST_DIR) \
+		-I$(CIMGUI_DIR) \
+		$(CIMGUI_DYLIB) \
+		$(GL3W_DIR)/GL/gl3w.c \
+		$(IMGUI_SDL2_GL3_OBJ) \
+		$(CIMGUI_SDL2_GL3_OBJ) \
+		src/main.c \
+		-o $(CBIN)
+
+$(IMGUI_SDL2_GL3_OBJ): $(IMGUI_DIR)/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.cpp
+	g++ -O2 -c -I$(IMGUI_DIR) -I$(GL3W_DIR) -I/usr/local/include/SDL2 -o $@ $<
+
+$(CIMGUI_SDL2_GL3_OBJ): src/cimgui_impl_sdl_gl3.cpp
+	g++ -O2 -c -I$(IMGUI_DIR) -I$(IMGUI_DIR)/examples/sdl_opengl3_example/ -Isrc -o $@ $<
+
+$(CIMGUI_DYLIB):
+	make -C $(CIMGUI_DIR)
+	cp $(CIMGUI_DIR)/cimgui.dylib $@

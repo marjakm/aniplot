@@ -5,7 +5,8 @@
 #include <math.h>
 #include <SDL.h>
 #include <GL/gl3w.h>
-/* #include "imgui_impl_sdl_gl3.h" */
+#include "cimgui.h"
+#include "cimgui_impl_sdl_gl3.h"
 
 #ifdef _WIN32
 	#include <direct.h> // getcwd
@@ -90,13 +91,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Setup ImGui binding
-	/* ImGui_ImplSdlGL3_Init(window); */
+	cImGui_ImplSdlGL3_Init(window);
 
 	// --------------------------------------------------------------------
 
 
 	// Cleanup
-	/* ImGui_ImplSdlGL3_Shutdown(); */
+	cImGui_ImplSdlGL3_Shutdown();
 	SDL_GL_DeleteContext(gl_context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
