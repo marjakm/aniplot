@@ -162,7 +162,7 @@ int main(int, char**)
 				if (event.key.keysym.sym == SDLK_ESCAPE) done = true;
 			}
 		}
-		ImGui_ImplSdlGL3_NewFrame();
+		ImGui_ImplSdlGL3_NewFrame(window);
 
 		ImGuiIO &io = ImGui::GetIO();
 
@@ -175,14 +175,14 @@ int main(int, char**)
 		//ImGui::ShowTestWindow();
 
 		if (1) {
-			float prev_bgalpha = GImGui->Style.WindowFillAlphaDefault; // PushStyleVar() doesn't seem to support this yet
-			GImGui->Style.WindowFillAlphaDefault = 0.;
+			// float prev_bgalpha = GImGui->Style.WindowFillAlphaDefault; // PushStyleVar() doesn't seem to support this yet TODO: fix
+			// GImGui->Style.WindowFillAlphaDefault = 0.; // TODO: fiz
 			ImGui::SetNextWindowSize(io.DisplaySize, ImGuiSetCond_Always);
 			ImGui::Begin("Robot", NULL,
 						 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
 						 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings |
 						 ImGuiWindowFlags_ShowBorders);
-			GImGui->Style.WindowFillAlphaDefault = prev_bgalpha;
+			// GImGui->Style.WindowFillAlphaDefault = prev_bgalpha; // TODO: fiz
 
 			uint32_t milliseconds = SDL_GetTicks();
 

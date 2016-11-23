@@ -2,7 +2,7 @@
 # TODO: make it work under linux
 
 GL3W_DIR=./lib/gl3w
-IMGUI_DIR=./lib/imgui
+IMGUI_DIR=./lib/cimgui/imgui
 
 BUILD_DIR=./build
 DIST_DIR=./dist
@@ -35,6 +35,17 @@ BIN_INC=-I/usr/local/include/ \
 		-framework CoreFoundation \
 		-lstdc++
 
+CBIN=$(DIST_DIR)/caniplot
+CBIN_SRCS=src/main.c \
+		  $(GL3W_DIR)/GL/gl3w.c
+CBIN_INC=-I/usr/local/include/ \
+		 -I/usr/local/include/SDL2/ \
+		 -I$(GL3W_DIR) \
+		 -lSDL2 \
+		 -lSDL2main \
+		 -framework OpenGL \
+		 -framework CoreFoundation \
+
 
 default: bin
 
@@ -46,6 +57,12 @@ clean:
 
 $(DIRS):
 	mkdir $@
+
+cbin: clean $(DIRS)
+	cc -O2 \
+		$(CBIN_INC) \
+		$(CBIN_SRCS) \
+		-o $(CBIN)
 
 bin: clean $(DIRS)
 	g++ -O2 \

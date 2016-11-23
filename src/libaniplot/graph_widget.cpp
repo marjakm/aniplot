@@ -43,12 +43,12 @@ void GraphWidget::DoGraph(const ImVec2& size) {
 	const ImRect bb(window->DC.CursorPos, window->DC.CursorPos+ImGui::GetContentRegionAvail());
 
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	draw_list->PushClipRect(ImVec4(bb.Min.x, bb.Min.y, bb.Max.x, bb.Max.y));
+	draw_list->PushClipRect(ImVec2(bb.Min.x, bb.Min.y), ImVec2(bb.Max.x, bb.Max.y));
 
 	// TODO: this name here might be not the right thing to use
 	const ImGuiID id = window->GetID(graph_channel.name.c_str());
 
-	ImGuiState& g = *GImGui;
+	ImGuiContext& g = *GImGui;
 	const ImGuiStyle& style = g.Style;
 
 	ImGui::ItemSize(bb, style.FramePadding.y);
