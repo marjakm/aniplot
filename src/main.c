@@ -6,7 +6,9 @@
 #include <SDL.h>
 #include <GL/gl3w.h>
 #include "cimgui.h"
+#include "cimgui_helper.h"
 #include "cimgui_impl_sdl_gl3.h"
+#include "libcaniplot.h"
 
 #ifdef _WIN32
 	#include <direct.h> // getcwd
@@ -15,10 +17,6 @@
 	#include <unistd.h> // getcwd
 #endif
 
-/* #include "graph_core.h" */
-/* #include "graph_world.h" */
-
-
 
 SDL_Window* window = NULL;
 
@@ -26,13 +24,7 @@ SDL_Window* window = NULL;
 #define INITIAL_SCREEN_HEIGHT 700
 
 
-
-/* ImRect get_window_coords() { */
-/* 	return ImRect(ImGui::GetWindowPos(), ImGui::GetWindowPos()+ImGui::GetWindowSize()); */
-/* 	//const ImRect bb(window->DC.CursorPos, window->DC.CursorPos+size); */
-/* 	//const ImRect bb(window->DC.CursorPos, window->DC.CursorPos+ImGui::GetContentRegionAvail()); */
-/* } */
-
+void main_loop();
 
 int main(int argc, char *argv[]) {
 	SDL_Log("initializing SDL\n");
@@ -93,8 +85,7 @@ int main(int argc, char *argv[]) {
 	// Setup ImGui binding
 	cImGui_ImplSdlGL3_Init(window);
 
-	// --------------------------------------------------------------------
-
+	main_loop();
 
 	// Cleanup
 	cImGui_ImplSdlGL3_Shutdown();
@@ -106,17 +97,16 @@ int main(int argc, char *argv[]) {
 }
 
 
-/*void main_loop() {
+void main_loop() {
 
-	ImVec4 clear_color = ImColor(114, 144, 154);
-	ImguiTextwrap textrend;
-
-	GraphWorld graph_world;
+	ImVec4 clear_color = cih_ImColor(114, 144, 154, 255);
+	ImVec4 txt_bgcolor = cih_ImColor(80,80,80,100);
+	ImVec4 txt_fgcolor = cih_ImColor(255,255,255,100);
+	ImguiTextwrap* textrend = anp_ImguiTextwrap();
+	GraphWorld* graph_world = anp_GraphWorld();
 	// creates one channel. without it, nothing would be rendered until someone updated some channels.
-	GraphChannel* graph_channel = graph_world.get_graph_channel(0, 0);
-	graph_channel->name = "default";
-
-	UdpListener windows_udp_listener;
+	GraphChannel* graph_channel = anp_GraphWorld_get_graph_channel(graph_world, 0, 0);
+	anp_GraphChannel_set_name(graph_channel, "default");
 
 
 	// Main loop
@@ -124,7 +114,7 @@ int main(int argc, char *argv[]) {
 	while (!done) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
-			ImGui_ImplSdlGL3_ProcessEvent(&event);
+			cImGui_ImplSdlGL3_ProcessEvent(&event);
 			if (event.type == SDL_QUIT) {
 				done = true;
 			}
@@ -135,57 +125,57 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		ImGui_ImplSdlGL3_NewFrame(window);
-		ImGuiIO &io = ImGui::GetIO();
+		cImGui_ImplSdlGL3_NewFrame(window);
 
 		// make the window always fullsize.
 		// disable window background rendering.
 		// remove borders, titlebar, menus, ..
 		// TODO: change window margins?
+		/* igShowTestWindow(false); */
 
-
-		//ImGui::ShowTestWindow();
-
-		float prev_bgalpha = GImGui->Style.WindowFillAlphaDefault; // PushStyleVar() doesn't seem to support this yet
-		GImGui->Style.WindowFillAlphaDefault = 0.;
-		ImGui::SetNextWindowSize(io.DisplaySize, ImGuiSetCond_Always);
-		ImGui::Begin("Robot", NULL,
+		// float prev_bgalpha = GImGui->Style.WindowFillAlphaDefault; // PushStyleVar() doesn't seem to support this yet TODO: fix
+		// GImGui->Style.WindowFillAlphaDefault = 0.; // TODO: fiz
+		igSetNextWindowSize(cih_get_io_DisplaySize(), ImGuiSetCond_Always);
+		igBegin("Robot", NULL,
 					 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
 					 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings |
 					 ImGuiWindowFlags_ShowBorders);
-		GImGui->Style.WindowFillAlphaDefault = prev_bgalpha;
+		// GImGui->Style.WindowFillAlphaDefault = prev_bgalpha; // TODO: fiz
 
 		uint32_t milliseconds = SDL_GetTicks();
 
 		//float v = sin(milliseconds / 3. * M_PI / 180.);
 		//graph_channel.data_channel.append_minmaxavg(v, v, v);
 
-		windows_udp_listener.tick(graph_world);
-
 		//for (auto graph : graph_world) {}
-		graph_world.graph_widgets[0]->DoGraph(ImVec2(1000, 600));
+		GraphWidget* graph_widget = anp_GraphWorld_get_graph_widget(graph_world, 0);
+		ImVec2 gw_size = {1000, 600};
+		anp_GraphWidget_DoGraph(graph_widget, &gw_size);
 
-		if (!textrend.font) textrend.init(ImGui::GetWindowFont());
-
+		anp_ImguiTextwrap_set_window_font(textrend);
 		char txt[50];
-		ImFormatString(txt, sizeof(txt), "fps: %.1f (%.3f ms)", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
-		ImRect windim = get_window_coords();
-		textrend.set_bgcolor(ImColor(80,80,80,100));
-		textrend.set_fgcolor(ImColor(255,255,255,100));
-		textrend.drawtr(txt, windim.Max.x - 14, windim.Min.y + 14);
+		cih_ImFormatString(txt, sizeof(txt), "fps: %.1f (%.3f ms)", cih_get_io_Framerate(), 1000.0f / cih_get_io_Framerate());
+		ImRect windim;
+		igGetWindowPos(&windim.Min);
+		igGetWindowSize(&windim.Max);
+		windim.Max.x += windim.Min.x;
+		windim.Max.y += windim.Min.y;
+		anp_ImguiTextwrap_set_bgcolor(textrend, &txt_bgcolor);
+		anp_ImguiTextwrap_set_fgcolor(textrend, &txt_fgcolor);
+		anp_ImguiTextwrap_drawtr(textrend, txt, windim.Max.x - 14, windim.Min.y + 14);
 
-		ImGui::End();
-
+		igEnd();
 
 		//static bool show_test_window;
 		//ImGui::ShowTestWindow(&show_test_window);
 
 		// Rendering
-		glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+		ImVec2 disp_size = cih_get_io_DisplaySize();
+		glViewport(0, 0, (int)disp_size.x, (int)disp_size.y);
 		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui::Render();
+		igRender();
 		SDL_GL_SwapWindow(window);
 	}
 }
-*/
+
