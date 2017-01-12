@@ -89,34 +89,50 @@ $(LIB): $(DIRS) $(ANLIB_OBJS)
 $(BUILD_DIR)/%.o: $(ANLIB_DIR)/%.cpp
 	$(CXX) -c $(COM_INC) -o $@ $<
 
-
-
 CBIN=$(DIST_DIR)/caniplot
+CLIB=$(DIST_DIR)/libcaniplot.a
 IMGUI_SDL2_GL3_OBJ=$(BUILD_DIR)/imgui_impl_sdl_gl3.o
 CIMGUI_SDL2_GL3_OBJ=$(BUILD_DIR)/cimgui_impl_sdl_gl3.o
-CBIN_CPP_OBJS=$(BUILD_DIR)/cimgui_helper.o \
-			  $(BUILD_DIR)/libcaniplot.o \
-			  $(IMGUI_SDL2_GL3_OBJ) \
-			  $(CIMGUI_SDL2_GL3_OBJ) \
-			  $(LIB) \
-			  $(CIMGUI_DYLIB)
+CBIN_DEPS = $(CLIB) \
+			$(IMGUI_SDL2_GL3_OBJ) \
+			$(CIMGUI_SDL2_GL3_OBJ)
 
-cbin: clean $(DIRS) $(CBIN_CPP_OBJS)
+_CIMGUI_OBJS = imgui.o \
+			   imgui_draw.o \
+			   imgui_demo.o \
+			   cimgui.o \
+		       fontAtlas.o  \
+		       drawList.o
+
+CIMGUI_OBJS = $(_CIMGUI_OBJS:%=$(BUILD_DIR)/%)
+
+clib: clean $(DIRS) $(CLIB)
+
+$(CLIB): $(CIMGUI_OBJS) $(ANLIB_OBJS) $(BUILD_DIR)/libcaniplot.o $(BUILD_DIR)/cimgui_helper.o
+	ar rcs $@ $^
+
+cbin: clean $(DIRS) $(CBIN_DEPS)
 	$(CXX) \
 		$(COM_INC) \
 		-L$(DIST_DIR) \
 		src/main.c \
 		$(GL3W_DIR)/GL/gl3w.c \
-		$(CBIN_CPP_OBJS) \
+		$(CBIN_DEPS) \
 		$(PLT_LNK) \
 		-o $(CBIN)
-
-$(BUILD_DIR)/%.o: src/%.cpp
-	$(CXX) -c $(COM_INC) -o $@ $<
 
 $(CIMGUI_DYLIB):
 	make -C $(CIMGUI_DIR)
 	cp $(CIMGUI_DYLIB:$(DIST_DIR)%=$(CIMGUI_DIR)%) $@
+
+$(BUILD_DIR)/%.o: src/%.cpp
+	$(CXX) -c $(COM_INC) -o $@ $<
+
+$(BUILD_DIR)/%.o: $(IMGUI_DIR)/%.cpp
+	$(CXX) -c $(COM_INC) -o $@ $<
+
+$(BUILD_DIR)/%.o: $(CIMGUI_DIR)/%.cpp
+	$(CXX) -c $(COM_INC) -o $@ $<
 
 $(IMGUI_SDL2_GL3_OBJ): $(IMGUI_DIR)/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.cpp
 	$(CXX) -c $(COM_INC) -o $@ $<
