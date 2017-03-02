@@ -5,10 +5,9 @@
 #define ANIPLOTLIB_H
 
 
-#include <string>
-
+#include <stdlib.h>
+#include <cstdint>
 #include "imgui.h"
-
 #include "mip_buf_t.h"
 #include "imgui_textwrap.h"
 
@@ -16,6 +15,11 @@
 #undef min
 #undef max
 
+inline void str_replace(char **p, const char *s) {
+    if (*p != NULL) free(*p);			 // Free previous string alloc
+    *p = (char*)malloc(strlen (s) + 1);	 // Space for length plus nul
+    if (*p != NULL) strcpy(*p,s);		 // Copy the characters
+}
 
 enum GraphVisualFlags_ {
 	GraphVisualFlags_DrawLeftGridLegend       = 1 << 0, // value axis legend
@@ -101,9 +105,9 @@ struct PortalRect {
 //      value_sample_portal : how to project samples from sample-space to value-space. this object resides in valuespace.
 struct GraphChannel {
 	MipBuf_t<float> data_channel;
-	std::string name; // for the legend
-	std::string unit; // displayed on the legend after value
-	std::string description;
+	char *name; // for the legend
+	char *unit; // displayed on the legend after value
+	char *description;
 
 	// we HAVE to know this to calculate timepoints from sample numbers.
 	//float sample_freq;
@@ -113,7 +117,13 @@ struct GraphChannel {
 	PortalRect portal; // How to project samples from sample-space to value-space. Resides in sample-space.
 
 	//GraphChannel(float _sample_freq=1000) { set_value_samplespace_mapping(ImRect(0,0, _sample_freq,1)); }
-	GraphChannel() { portal.max = ImVec2d(1000., 1.);} // { set_value_samplespace_mapping(ImRect(0,0, 1000,1)); }
+	GraphChannel() {
+		name = unit = description = NULL;
+		str_replace(&name, "name");
+		str_replace(&unit, "unit");
+		str_replace(&description, "description");
+		portal.max = ImVec2d(1000., 1.);
+	} // { set_value_samplespace_mapping(ImRect(0,0, 1000,1)); }
 
 	// convenience functions
 	inline void append_sample(float v) { data_channel.append(v); }

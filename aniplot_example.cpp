@@ -63,10 +63,9 @@ void init_graphs()
 	// visual guides that indicate min/max possible values
 	graph_channel1_1.value_min = -4;
 	graph_channel1_1.value_max = 4;
-	graph_channel1_1.name = "line1";
-	graph_channel1_1.unit = "m/s2";
-
-	graph_channel1_2.name = "line2";
+	str_replace(&graph_channel1_1.name, "line1");
+	str_replace(&graph_channel1_1.unit, "m/s2");
+	str_replace(&graph_channel1_2.name, "line2");
 
 	//
 	// widget 2
@@ -77,8 +76,8 @@ void init_graphs()
 	graph_widget2.add_graph(&graph_visual2_1);
 
 	graph_visual2_1.line_color = ImColor(0.5f, 1.0f, 0.5f);
-	graph_channel2_1.name = "speed";
-	graph_channel2_1.unit = "m/s";
+	str_replace(&graph_channel2_1.name, "speed");
+	str_replace(&graph_channel2_1.unit,  "m/s");
 }
 
 void append_samples()

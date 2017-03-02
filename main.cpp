@@ -134,8 +134,8 @@ public:
 		// ImRect(1, 10,  2, 255) maps samplenum 1 to 0s, sampleval 10 to 0V, samplenum 2 to 1s, sampleval 255 to 1V.
 		channel->set_value_samplespace_mapping(ImRect(portal_x1, portal_y1, portal_x2, portal_y2));
 		channel->set_value_limits(value_min, value_max);
-		channel->name = (char*)channel_name;
-		channel->unit = (char*)channel_unit;
+		str_replace(&channel->name, (char*)channel_name);
+		str_replace(&channel->unit, (char*)channel_unit);
 	}
 
 	// x, y, w, h : all 0..1
@@ -447,7 +447,7 @@ int main(int, char**)
 	GraphWorld graph_world;
 	// creates one channel. without it, nothing would be rendered until someone updated some channels.
 	GraphChannel* graph_channel = graph_world.get_graph_channel(0, 0);
-	graph_channel->name = "default";
+	str_replace(&graph_channel->name, "default");
 
 	UdpListener windows_udp_listener;
 

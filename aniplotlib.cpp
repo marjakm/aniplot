@@ -291,7 +291,7 @@ void GraphWidget::_render_grid_horlegend(const PortalRect& screen_value_portal, 
 	}
 
 	//this->m_textrend->set_bgcolor(ImColor(graph_visual.hor_grid_text_bgcolor));
-	this->m_textrend->drawml(graph_visual.graph_channel->unit.c_str(), canvas_bb.Min.x + 60, canvas_bb.Min.y + 13);
+	this->m_textrend->drawml(graph_visual.graph_channel->unit, canvas_bb.Min.x + 60, canvas_bb.Min.y + 13);
 }
 
 void GraphWidget::_render_grid_verlines(const PortalRect& screen_value_portal, GraphVisual& graph_visual, const ImRect& canvas_bb)
@@ -394,7 +394,7 @@ void GraphWidget::_render_legend(const ImRect& canvas_bb)
 		ImGui::PushID(i+100);
 		ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(graph_visuals[i]->line_color));
 
-			ImGui::Checkbox(graph_visuals[i]->graph_channel->name.c_str(), &graph_visuals[i]->visible);
+			ImGui::Checkbox(graph_visuals[i]->graph_channel->name, &graph_visuals[i]->visible);
 
 		ImGui::PopStyleColor(1);
 		ImGui::PopID();
