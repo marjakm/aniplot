@@ -125,6 +125,12 @@ struct GraphChannel {
 		portal.max = ImVec2d(1000., 1.);
 	} // { set_value_samplespace_mapping(ImRect(0,0, 1000,1)); }
 
+	~GraphChannel() {
+		free(name);
+		free(unit);
+		free(description);
+	};
+
 	// convenience functions
 	inline void append_sample(float v) { data_channel.append(v); }
 	inline void append_sample_minmaxavg(float min, float max, float avg) { data_channel.append_minmaxavg(min, max, avg); }
